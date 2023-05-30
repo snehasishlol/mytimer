@@ -1,95 +1,134 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+
+import { useState, useEffect } from 'react';
+import styles from './page.module.css';
+import {FiPause, FiPlay, FiRefreshCw, FiVolume2, FiVolumeX } from 'react-icons/fi';
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [isActive, setIsActive] = useState(false);
+	const [isPaused, setIsPaused] = useState(true);
+	const [time, setTime] = useState(0);
+	const [tickingSoundMuted, setTickingSoundMuted] = useState(false);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	useEffect(() => {
+		let interval = null;
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+		if (isActive && isPaused === false) {
+			interval = setInterval(() => {
+				setTime((time) => time + 10);
+			}, 10);
+		} else {
+			clearInterval(interval);
+		}
+		return () => {
+			clearInterval(interval);
+		};
+	}, [isActive, isPaused]);
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+	useEffect(() => {
+		let interval = null;
+		let tickingSound = new Audio('/sfx/tick.mp3');
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
+		if (isActive && isPaused === false && tickingSoundMuted === false) {
+			interval = setInterval(() => {
+				tickingSound.play();
+			}, 1000);
+		} else {
+			clearInterval(interval);
+		}
+		return () => {
+			clearInterval(interval);
+		};
+	}, [isActive, isPaused, tickingSoundMuted]);
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+	const handleStart = () => {
+		setIsActive(true);
+		setIsPaused(false);
+	};
+
+	const handlePauseResume = () => {
+		setIsPaused(!isPaused);
+	};
+
+	const handleReset = () => {
+		setIsActive(false);
+		setTime(0);
+	};
+
+	const handleTickingSound = () => {
+		setTickingSoundMuted(!tickingSoundMuted);
+	}
+
+	return (
+		<>
+			<main className={styles.main}>
+				<div className={styles.flex}>
+					<div className={styles.box}>
+						<p className={styles.time_text} id={'minutes'}>{("0" + Math.floor((time / 60000) % 60)).slice(-2)}</p>
+					</div>
+					<div className={styles.box}>
+						<p className={styles.time_text}>:</p>
+					</div>
+					<div className={styles.box}>
+						<p className={styles.time_text} id={'seconds'}>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}</p>
+					</div>
+				</div>
+				<br />
+				<div className={styles.flex}>
+					<div className={styles.box}>
+						<button className={styles.btn} id={'mute'} onClick={handleTickingSound}>
+							{
+								tickingSoundMuted ?
+								<FiVolumeX />
+								: 
+								<FiVolume2 />
+							}
+						</button>
+					</div>
+					{
+						isActive ?
+							<>
+								<div className={styles.box}>
+									<button className={styles.btn} id={'pause-resume'} onClick={handlePauseResume}>
+										{
+											isPaused ? <FiPlay /> : <FiPause />
+										}
+									</button>
+								</div>
+							</>
+							:
+							<>
+								<div className={styles.box}>
+									<button className={styles.btn} id={'start'} onClick={handleStart}><FiPlay /></button>
+								</div>
+							</>
+					}
+					<div className={styles.box}>
+						<button className={styles.btn} id={'reset'} onClick={handleReset}><FiRefreshCw /></button>
+					</div>
+				</div>
+			</main>
+		</>
+	)
 }
+
+/*
+			{
+				tasksModalOpen ?
+					<>
+						<div className={styles.modal}>
+							<div className={styles.modal_content}>
+								<div className={styles.flex}>
+									<span className={styles.modal_title}>Tasks</span>
+									<span className={styles.btn} onClick={handleTaskModal}><FiX /></span>
+								</div>
+								<div className={styles.flex}>
+									<input type={'text'} className={styles.input} maxLength={100} id={'task-name'} placeholder={'Enter your task...'} />
+									<button className={styles.btn}><FiPlus /></button>
+								</div>
+							</div>
+						</div>
+					</>
+					: null
+			}
+			*/
