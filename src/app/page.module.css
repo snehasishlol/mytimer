@@ -157,7 +157,7 @@
     }
 }
 
-@media only screen and (max-width: 550px) {
+@media only screen and (max-width: 600px) {
     .time_text {
         font-size: 40px;
     }
@@ -172,5 +172,25 @@
 
     .main {
         margin: 50% 10%;
+        rotate: 90deg;
+    }
+}
+
+@media only screen and (max-width: 450px) {
+    .time_text {
+        font-size: 55px;
+    }
+
+    .btn {
+        font-size: 20px;
+    }
+
+    .modal_title {
+        font-size: 20px;
+    }
+
+    .main {
+        margin: 80% 1%;
+        rotate: 90deg;
     }
 }
