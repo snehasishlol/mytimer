@@ -29,3 +29,9 @@ a {
     color: rgb(24, 7, 47);
     background: rgb(216, 160, 255);
 }
+
+@media only screen and (max-width: 600px) {
+    body {
+        rotate: 90deg;
+    }
+}
